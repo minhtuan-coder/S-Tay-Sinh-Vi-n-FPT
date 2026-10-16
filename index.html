@@ -46,6 +46,18 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        @keyframes dice-roll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.15); }
+            50% { transform: rotate(180deg) scale(0.9); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .animate-dice {
+            animation: dice-roll 0.6s ease-in-out infinite;
+        }
     </style>
 </head>
 
@@ -119,10 +131,10 @@
                 <i data-lucide="wallet" class="w-5 h-5"></i>
                 <span class="text-[9px] font-semibold">Tài Chính</span>
             </button>
-            <button onclick="switchTab('community')" id="nav-community"
+            <button onclick="switchTab('dice')" id="nav-dice"
                 class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
-                <i data-lucide="users" class="w-5 h-5"></i>
-                <span class="text-[9px] font-semibold">Kết Nối</span>
+                <i data-lucide="dices" class="w-5 h-5"></i>
+                <span class="text-[9px] font-semibold">Xúc Xắc</span>
             </button>
             <button onclick="switchTab('glossary')" id="nav-glossary"
                 class="flex flex-col items-center space-y-1 text-slate-400 hover:text-slate-600 transition">
@@ -579,6 +591,69 @@
             {title: 'Tuyển Dev C/C++ / Web Thực Tập', category: 'Việc làm', desc: 'Công ty FPT Software Tuyển Thực Tập Sinh 2026 - Hỗ trợ phụ cấp 3.000.000đ/tháng.'}
         ];
 
+        // --- RANDOM DICE ACTIVITIES DATA FOR FPT STUDENTS ---
+        const diceActivities = [
+            {
+                title: '🌊 Ngắm Hoàng Hôn Bãi Biển Tân Trà',
+                category: 'Thiên Nhiên • Miễn Phí',
+                distance: 'Cách ĐH FPT ~2km',
+                desc: 'Chạy xe ra bãi biển Tân Trà gần sát trường, hít thở không khí biển, chill cùng ly trà sữa hoặc cà phê muối giá rẻ.',
+                icon: 'waves',
+                mapQuery: 'Bãi biển Tân Trà Đà Nẵng'
+            },
+            {
+                title: '☕ "Đổi Gió" Học Bài Tại Cà Phê Muối FPT City',
+                category: 'Cà Phê • Học Nhóm',
+                distance: 'Cách ĐH FPT 400m',
+                desc: 'Ghé quán cà phê quanh Shophouse Plaza FPT City làm ly cà phê muối đậm đà, đổi không gian học bài đỡ ngột ngạt.',
+                icon: 'coffee',
+                mapQuery: 'Cà phê FPT City Đà Nẵng'
+            },
+            {
+                title: '🎧 "Blind Box Music" - Nghe Lofi Đeo Tai Nghe Tại Hồ Sinh Thái',
+                category: 'Thư Giãn • Cá Nhân',
+                distance: 'Trong khu đô thị FPT',
+                desc: 'Đi dạo quanh hồ sinh thái FPT City, đeo tai nghe và bật playlist Lofi ngẫu nhiên để giải tỏa stress sau giờ code.',
+                icon: 'headphones',
+                mapQuery: 'Hồ sinh thái FPT City Đà Nẵng'
+            },
+            {
+                title: '🍢 Oanh Tạc Chợ Đêm Cổng Trường VKU & FPT',
+                category: 'Ăn Uống • Giá Sinh Viên',
+                distance: 'Cách ĐH FPT ~800m',
+                desc: 'Rủ cạ cứng đi ăn xiên bẩn, bánh xèo, chè thái và trà chanh vỉa hè khu vực Nam Kỳ Khởi Nghĩa siêu rẻ.',
+                icon: 'utensils',
+                mapQuery: 'Đường Nam Kỳ Khởi Nghĩa Hòa Quý Đà Nẵng'
+            },
+            {
+                title: '🎳 Săn Strike Tại Bowling Lotte Mart Đà Nẵng',
+                category: 'Giải Trí • Nhóm Bạn',
+                distance: 'Cách ĐH FPT ~7km',
+                desc: 'Sắp xếp kèo bowling giật giải với hội bạn thân để xả hết muộn phiền thi cử!',
+                icon: 'trophy',
+                mapQuery: 'Lotte Mart Đà Nẵng Bowling'
+            },
+            {
+                title: '🌉 Phượt Đêm Cầu Rồng & Xem Phun Lửa',
+                category: 'Khám Phá • Cuối Tuần',
+                distance: 'Trung tâm thành phố',
+                desc: 'Lên kèo phượt xe máy vào trung tâm thành phố ngắm cầu Rồng phun lửa (21:00 T7/CN) và hít gió sông Hàn.',
+                icon: 'compass',
+                mapQuery: 'Cầu Rồng Đà Nẵng'
+            },
+            {
+                title: '🏸 Giao Lưu Cầu Lông / Bóng Rổ Tại Sân Trường',
+                category: 'Thể Thao • Năng Lượng',
+                distance: 'Nội khu ĐH FPT',
+                desc: 'Mượn vợt cầu lông hoặc quả bóng rổ ra sân thể thao trường làm vài ván vận động mồ hôi tràn trề!',
+                icon: 'activity',
+                mapQuery: 'Trường Đại học FPT Đà Nẵng'
+            }
+        ];
+
+        let selectedDiceResult = null;
+        let isRolling = false;
+
         let currentTab = 'explore';
         let selectedPlaceIdForDetail = null;
 
@@ -608,7 +683,7 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            ['explore', 'academic', 'finance', 'community', 'glossary'].forEach(t => {
+            ['explore', 'academic', 'finance', 'dice', 'glossary'].forEach(t => {
                 const btn = document.getElementById(`nav-${t}`);
                 if (btn) {
                     if (t === tab) {
@@ -626,7 +701,7 @@
             if (currentTab === 'explore') container.innerHTML = renderExploreView();
             else if (currentTab === 'academic') container.innerHTML = renderAcademicRoadmapView();
             else if (currentTab === 'finance') container.innerHTML = renderFinanceView();
-            else if (currentTab === 'community') container.innerHTML = renderCommunityView();
+            else if (currentTab === 'dice') container.innerHTML = renderDiceView();
             else if (currentTab === 'glossary') container.innerHTML = renderGlossaryView();
             lucide.createIcons();
         }
@@ -928,34 +1003,113 @@
             `;
         }
 
-        // --- 4. COMMUNITY VIEW ---
-        function renderCommunityView() {
+        // --- 4. RANDOM DECISION PICKER / DICE VIEW ---
+        function renderDiceView() {
             return `
                 <div class="p-4 space-y-4 text-xs">
-                    <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm space-y-2">
-                        <div class="flex items-center space-x-2 text-emerald-600 font-bold">
-                            <i data-lucide="users" class="w-4 h-4"></i>
-                            <h3 class="text-sm text-slate-800">Tìm Bạn Học Nhóm & Ở Ghép</h3>
+                    <!-- Header Banner -->
+                    <div class="bg-gradient-to-r from-teal-600 via-emerald-600 to-emerald-700 text-white p-4 rounded-2xl shadow-md space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded text-[10px] font-bold uppercase tracking-wider">Hôm Nay Đi Đâu?</span>
+                            <i data-lucide="sparkles" class="w-4 h-4 text-amber-300"></i>
                         </div>
-                        <p class="text-[11px] text-slate-500 leading-relaxed">Gắn kết sinh viên ĐH FPT & VKU Đà Nẵng cùng khu vực ở trọ Hòa Quý.</p>
-                        <button onclick="showToast('Đã mở tính năng ghép đôi học tập!')" class="w-full py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold rounded-xl transition text-[11px] border border-emerald-200/60">
-                            + Đăng Tin Tìm Bạn Học / Ở Ghép
-                        </button>
+                        <h3 class="font-extrabold text-sm text-white">Xúc Xắc Giải Trí & "Cứu Cánh" Chán Đời 🎲</h3>
+                        <p class="text-[10px] text-emerald-100 leading-relaxed">
+                            Mệt mỏi với đống bài tập hay hết biết đi đâu quanh ĐH FPT? Lắc một phát để chọn hoạt động ngẫu nhiên ngay!
+                        </p>
                     </div>
 
-                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-4 rounded-2xl shadow-md space-y-2.5">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded text-[10px] font-bold">Mental Health 💚</span>
-                            <i data-lucide="heart-pulse" class="w-4 h-4"></i>
+                    <!-- Main Dice Roller Section -->
+                    <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm text-center space-y-4">
+                        <div class="py-3 flex justify-center items-center">
+                            <div id="diceIconContainer" class="w-20 h-20 bg-emerald-50 border-2 border-emerald-200 rounded-3xl flex items-center justify-center shadow-inner cursor-pointer hover:bg-emerald-100 transition" onclick="rollDice()">
+                                <i id="diceIcon" data-lucide="dices" class="w-10 h-10 text-emerald-600"></i>
+                            </div>
                         </div>
-                        <h4 class="font-bold text-xs">Góc Giải Tỏa Tâm Lý & Stress</h4>
-                        <p class="text-[10px] text-emerald-100 leading-relaxed">Cảm thấy áp lực với môi trường đại học mới? Làm bài trắc nghiệm ngắn để kiểm tra mức độ stress nhé.</p>
-                        <button onclick="showToast('Đang tải bài test tâm lý DASS-21...')" class="px-3 py-1.5 bg-white text-emerald-800 font-bold rounded-xl text-[10px] shadow-sm hover:bg-emerald-50 transition">
-                            Làm bài test DASS-21 (2 phút)
+
+                        <button id="rollBtn" onclick="rollDice()" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold rounded-xl shadow-md shadow-emerald-200 text-xs flex items-center justify-center space-x-2 transition">
+                            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                            <span>LẮC XÚC XẮC NGẪU NHIÊN</span>
                         </button>
+
+                        <!-- Result Display Box -->
+                        <div id="diceResultCard" class="mt-2 p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl text-left space-y-2 hidden">
+                            <div class="flex items-center justify-between">
+                                <span id="resCategory" class="px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded-md">Thiên Nhiên</span>
+                                <span id="resDistance" class="text-[10px] font-semibold text-slate-500">Cách ĐH FPT ~2km</span>
+                            </div>
+                            <h4 id="resTitle" class="text-xs font-extrabold text-slate-800">🌊 Ngắm Hoàng Hôn Bãi Biển Tân Trà</h4>
+                            <p id="resDesc" class="text-[11px] text-slate-600 leading-relaxed">Chạy xe ra bãi biển Tân Trà gần sát trường, hít thở không khí biển, chill cùng ly trà sữa hoặc cà phê muối giá rẻ.</p>
+                            
+                            <div class="pt-2 border-t border-emerald-100/80">
+                                <a id="resMapBtn" href="#" target="_blank" class="w-full py-2 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl font-bold flex items-center justify-center space-x-1.5 transition text-[11px]">
+                                    <i data-lucide="navigation" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                    <span>Mở Địa Điểm Này Trên Google Maps</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick List of All Random Activities -->
+                    <div class="bg-white p-4 rounded-2xl border border-emerald-100 shadow-sm space-y-3">
+                        <h4 class="font-bold text-slate-800 text-xs flex items-center space-x-1">
+                            <i data-lucide="list" class="w-3.5 h-3.5 text-emerald-600"></i>
+                            <span>Tụ Điểm Giải Trí Quanh ĐH FPT</span>
+                        </h4>
+                        <div class="space-y-2">
+                            ${diceActivities.map(act => `
+                                <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1 hover:border-emerald-200 transition">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-slate-800 text-[11px]">${act.title}</span>
+                                        <span class="text-[9px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100">${act.distance}</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 leading-relaxed">${act.desc}</p>
+                                </div>
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             `;
+        }
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+
+            const iconContainer = document.getElementById('diceIconContainer');
+            const resultCard = document.getElementById('diceResultCard');
+            const rollBtn = document.getElementById('rollBtn');
+
+            // Add roll animation
+            iconContainer.classList.add('animate-dice');
+            rollBtn.disabled = true;
+            rollBtn.classList.add('opacity-70');
+
+            setTimeout(() => {
+                iconContainer.classList.remove('animate-dice');
+                
+                // Pick random index
+                const randomIndex = Math.floor(Math.random() * diceActivities.length);
+                const chosen = diceActivities[randomIndex];
+
+                // Update UI Result Card
+                document.getElementById('resCategory').innerText = chosen.category;
+                document.getElementById('resDistance').innerText = chosen.distance;
+                document.getElementById('resTitle').innerText = chosen.title;
+                document.getElementById('resDesc').innerText = chosen.desc;
+                
+                const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(chosen.mapQuery)}`;
+                document.getElementById('resMapBtn').href = mapUrl;
+
+                resultCard.classList.remove('hidden');
+
+                isRolling = false;
+                rollBtn.disabled = false;
+                rollBtn.classList.remove('opacity-70');
+
+                lucide.createIcons();
+                showToast(`🎯 Xúc xắc chọn: ${chosen.title}`);
+            }, 600);
         }
 
         // --- 5. GLOSSARY VIEW ---
